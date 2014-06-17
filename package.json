@@ -1,0 +1,29 @@
+{
+  "name": "couch_email_auth",
+  "version": "0.1.0",
+  "description": "passwordless authentication for CouchDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KlausTrainer/couch_email_auth"
+  },
+  "keywords": [
+    "CouchDB",
+    "passwordless",
+    "authentication"
+  ],
+  "author": "Robert Kowalski & Klaus Trainer",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/KlausTrainer/couch_email_auth/issues"
+  },
+  "homepage": "https://github.com/KlausTrainer/couch_email_auth",
+  "devDependencies": {
+    "request": "~2.36.0",
+    "mocha": "~1.20.1",
+    "tape": "~2.13.3"
+  }
+}
