@@ -1,6 +1,6 @@
 var test = require('tape'),
-  request = require('request'),
-  s = require('../lib/server');
+    request = require('request'),
+    s = require('../lib/server');
 
 var address, port, server;
 
@@ -14,7 +14,7 @@ test('setup', function(t) {
 });
 
 test('POST /', function(t) {
-  t.test('POST /', function(t) {
+  t.test('POST to / fails with empty body', function(t) {
     request({
       method: 'POST',
       uri: 'http://' + address + ':' + port
@@ -24,7 +24,7 @@ test('POST /', function(t) {
     });
   });
 
-  t.test('POST /', function(t) {
+  t.test('POST to / fails with no email property', function(t) {
     request({
       method: 'POST',
       uri: 'http://' + address + ':' + port,
@@ -35,7 +35,7 @@ test('POST /', function(t) {
     });
   });
 
-  t.test('POST /', function(t) {
+  t.test('POST to / fails with wrong email address', function(t) {
     request({
       method: 'POST',
       uri: 'http://' + address + ':' + port,
@@ -46,7 +46,7 @@ test('POST /', function(t) {
     });
   });
 
-  t.test('POST /', function(t) {
+  t.test('POST to / works with valid email address', function(t) {
     request({
       method: 'POST',
       uri: 'http://' + address + ':' + port,
