@@ -1,8 +1,8 @@
 "use strict";
 
 var test = require('tape'),
-    request = require('request'),
-    s = require('../lib/server');
+    s = require('../lib/server'),
+    testRequest = require('./test_helper').testRequest;
 
 var address, port, server;
 
@@ -16,60 +16,32 @@ test('setup', function(t) {
 });
 
 test('POST /', function(t) {
-  t.test('POST to / fails with empty body', function(t) {
-    request({
-      method: 'POST',
-      uri: 'http://' + address + ':' + port
-    }, function(err, res, body) {
-      t.equal(res.statusCode, 400);
-      t.end();
-    });
-  });
+  var context = {address: address, port: port, t: t};
 
-  t.test('POST to / fails with no email property', function(t) {
-    request({
-      method: 'POST',
-      uri: 'http://' + address + ':' + port,
-      body: '{"foo": 42}'
-    }, function(err, res, body) {
-      t.equal(res.statusCode, 400);
-      t.end();
-    });
-  });
+  testRequest(
+    context, 'POST to / fails with empty body',
+    'POST', null,
+    400, '{"error":"invalid request JSON"}');
 
-  t.test('POST to / fails with wrong email address', function(t) {
-    request({
-      method: 'POST',
-      uri: 'http://' + address + ':' + port,
-      body: '{"email":42}'
-    }, function(err, res, body) {
-      t.equal(res.statusCode, 400);
-      t.end();
-    });
-  });
+  testRequest(
+    context, 'POST to / fails with no email property',
+    'POST', '{"foo":42}',
+    400, '{"error":"invalid email"}');
 
-  t.test('POST to / fails with wrong email address', function(t) {
-    request({
-      method: 'POST',
-      uri: 'http://' + address + ':' + port,
-      body: '{"email":"foo@bar"}'
-    }, function(err, res, body) {
-      t.equal(res.statusCode, 400);
-      t.end();
-    });
-  });
+  testRequest(
+    context, 'POST to / fails with wrong email address',
+    'POST', '{"email":42}',
+    400, '{"error":"invalid email"}');
 
-  t.test('POST to / works with valid email address', function(t) {
-    request({
-      method: 'POST',
-      uri: 'http://' + address + ':' + port,
-      body: '{"email":"foobator@example.com"}'
-    }, function(err, res, body) {
-      t.equal(res.statusCode, 200);
-      t.equal(body, '{"ok":true}');
-      t.end();
-    });
-  });
+  testRequest(
+    context, 'POST to / fails with wrong email address',
+    'POST', '{"email":"foo@bar"}',
+    400, '{"error":"invalid email"}');
+
+  testRequest(
+    context, 'POST to / works with valid email address',
+    'POST', '{"email":"foobator@example.com"}',
+    200, '{"ok":true}');
 
   t.end();
 });
