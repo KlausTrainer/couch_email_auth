@@ -4,15 +4,18 @@ var test = require('tape'),
     s = require('../lib/server'),
     testRequest = require('./test_helper').testRequest;
 
-var address, port, server;
+var address = '127.0.0.1', port = 0, server;
 
 test('setup', function(t) {
-  s.run(function(instance) {
+  s.run({
+    port: port,
+    host: address
+  }, function(instance) {
     server = instance;
     address = server.address().address;
     port = server.address().port;
     t.end();
-  }, 0, '127.0.0.1');
+  });
 });
 
 test('POST /', function(t) {
