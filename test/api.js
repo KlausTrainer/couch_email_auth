@@ -46,6 +46,17 @@ test('POST /', function(t) {
     });
   });
 
+  t.test('POST to / fails with wrong email address', function(t) {
+    request({
+      method: 'POST',
+      uri: 'http://' + address + ':' + port,
+      body: '{"email":"foo@bar"}'
+    }, function(err, res, body) {
+      t.equal(res.statusCode, 400);
+      t.end();
+    });
+  });
+
   t.test('POST to / works with valid email address', function(t) {
     request({
       method: 'POST',
