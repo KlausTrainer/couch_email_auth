@@ -1,3 +1,5 @@
+"use strict";
+
 var test = require('tape'),
     request = require('request'),
     s = require('../lib/server');
