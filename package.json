@@ -4,7 +4,7 @@
   "description": "passwordless authentication for CouchDB",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "NODE_ENV=test tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
   "devDependencies": {
     "request": "~2.36.0",
     "tape": "~2.13.3"
+  },
+  "dependencies": {
+    "nano": "~5.10.0"
   }
 }

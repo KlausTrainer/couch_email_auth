@@ -1,8 +1,14 @@
 "use strict";
 
+process.env.NODE_ENV = 'test';
+
 var test = require('tape'),
     s = require('../lib/server'),
-    testRequest = require('./test_helper').testRequest;
+    request = require('request'),
+    testRequest = require('./test_helper').testRequest,
+    couchDbBaseUrl = 'http://admin:secret@localhost:5984',
+    config = require('../lib/config'),
+    db = require('nano')(couchDbBaseUrl + '/' + config.usersDb);
 
 var address = '127.0.0.1', port = 0, server;
 
@@ -14,7 +20,16 @@ test('setup', function(t) {
     server = instance;
     address = server.address().address;
     port = server.address().port;
-    t.end();
+
+    // setup CouchDB with test config
+    request({
+      method: 'PUT',
+      uri: couchDbBaseUrl + '/_config/couch_httpd_auth/authentication_db',
+      body: '"' + config.usersDb + '"'
+    }, function(err, response, body) {
+      t.notOk(err, 'set CouchDB test configuation');
+      t.end();
+    });
   });
 });
 
@@ -46,10 +61,28 @@ test('POST /', function(t) {
     'POST', '{"email":"foobator@example.com"}',
     200, '{"ok":true}');
 
+  t.test('saves login credentials to CouchDB', function(t) {
+    db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
+      t.notOk(err, 'document missing');
+      t.equal(doc.name, 'foobator@example.com');
+      t.equal(typeof doc.timestamp, 'number');
+      t.end();
+    });
+  });
+
   t.end();
 });
 
 test('teardown', function(t) {
   server.close();
-  t.end();
+
+  // reset CouchDB config
+  request({
+    method: 'PUT',
+    uri: couchDbBaseUrl + '/_config/couch_httpd_auth/authentication_db',
+    body: '"_users"'
+  }, function(err, response, body) {
+    t.notOk(err, 'reset CouchDB test configuation');
+    t.end();
+  });
 });
