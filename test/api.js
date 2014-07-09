@@ -10,13 +10,10 @@ var test = require('tape'),
     couchDbBaseUrl = config.couchDbBaseUrl,
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb);
 
-var address = '127.0.0.1', port = 0, server;
+var address, port, server;
 
 test('setup', function(t) {
-  s.run({
-    port: port,
-    host: address
-  }, function(instance) {
+  s.run(function(instance) {
     server = instance;
     address = server.address().address;
     port = server.address().port;
