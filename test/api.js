@@ -6,8 +6,8 @@ var test = require('tape'),
     s = require('../lib/server'),
     request = require('request'),
     testRequest = require('./test_helper').testRequest,
-    couchDbBaseUrl = 'http://admin:secret@localhost:5984',
     config = require('../lib/config'),
+    couchDbBaseUrl = config.couchDbBaseUrl,
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb);
 
 var address = '127.0.0.1', port = 0, server;
