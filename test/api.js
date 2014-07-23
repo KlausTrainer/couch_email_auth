@@ -8,9 +8,10 @@ var test = require('tape'),
     testRequest = require('./test_helper').testRequest,
     config = require('../lib/config'),
     couchDbBaseUrl = config.couchDbBaseUrl,
-    db = require('nano')(couchDbBaseUrl + '/' + config.usersDb);
+    db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
+    simplesmtp = require("simplesmtp");
 
-var address, port, server;
+var address, port, server, smtp;
 
 test('setup', function(t) {
   s.run(function(instance) {
@@ -24,8 +25,12 @@ test('setup', function(t) {
       uri: couchDbBaseUrl + '/_config/couch_httpd_auth/authentication_db',
       body: '"' + config.usersDb + '"'
     }, function(err, response, body) {
-      t.notOk(err, 'set CouchDB test configuation');
-      t.end();
+      t.notOk(err, 'set CouchDB test configuration');
+      smtp = simplesmtp.createServer({disableDNSValidation: true});
+      smtp.listen(config.smtpPort, function(error) {
+        t.notOk(error, 'could not start smtp server');
+        t.end();
+      });
     });
   });
 });
@@ -53,10 +58,38 @@ test('POST /', function(t) {
     'POST', '{"email":"foo@bar"}',
     400, '{"error":"invalid email"}');
 
-  testRequest(
-    context, 'POST to / works with valid email address',
-    'POST', '{"email":"foobator@example.com"}',
-    200, '{"ok":true}');
+  t.test('POST to / works with valid email address and an email is sent', function(t) {
+    var emailBody = '',
+        expectedToEmail = 'foobator42@example.com',
+        expectedFromEmail = 'couch_email_auth@example.com',
+        actualFromEmail, actualToEmail;
+
+    smtp.on("startData", function(connection) {
+      actualFromEmail = connection.from;
+      actualToEmail = connection.to[0];
+    });
+
+    smtp.on("data", function(connection, chunk) {
+      emailBody += chunk.toString();
+    });
+
+    smtp.on("dataReady", function(connection, callback) {
+      callback(null, "ABC1" + Math.abs(Math.random() * 1000000)); // ABC1 is the queue id to be advertised to the client
+    });
+
+    request({
+      method: 'POST',
+      uri: 'http://' + address + ':' + port,
+      body: '{"email":"' + expectedToEmail + '"}'
+    }, function(err, response, body) {
+      t.equal(response.statusCode, 200);
+      t.equal(body, '{"ok":true}');
+      t.equal(actualFromEmail, expectedFromEmail);
+      t.equal(actualToEmail, expectedToEmail);
+      t.ok(/https?:\/\/example\.com/.test(emailBody));
+      t.end();
+    });
+  });
 
   t.test('saves login credentials to CouchDB', function(t) {
     db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
@@ -79,7 +112,9 @@ test('teardown', function(t) {
     uri: couchDbBaseUrl + '/_config/couch_httpd_auth/authentication_db',
     body: '"_users"'
   }, function(err, response, body) {
-    t.notOk(err, 'reset CouchDB test configuation');
-    t.end();
+    t.notOk(err, 'reset CouchDB test configuration');
+    smtp.end(function() {
+      t.end();
+    });
   });
 });
