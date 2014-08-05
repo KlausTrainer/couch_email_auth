@@ -27,7 +27,7 @@ test('setup', function(t) {
     }, function(err, response, body) {
       t.notOk(err, 'set CouchDB test configuration');
       smtp = simplesmtp.createServer({disableDNSValidation: true});
-      smtp.listen(config.smtpPort, function(error) {
+      smtp.listen(config.mailer.port, function(error) {
         t.notOk(error, 'start smtp server');
         t.end();
       });
