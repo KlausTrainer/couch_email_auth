@@ -92,11 +92,17 @@ test('POST /', function(t) {
   });
 
   t.test('saves login credentials to CouchDB', function(t) {
-    db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
-      t.notOk(err, 'document missing');
-      t.equal(doc.name, 'foobator@example.com');
-      t.equal(typeof doc.timestamp, 'number');
-      t.end();
+    request({
+      method: 'POST',
+      uri: 'http://' + address + ':' + port,
+      body: '{"email":"foobator@example.com"}'
+    }, function(err, response, body) {
+      db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
+        t.notOk(err, 'document missing');
+        t.equal(doc.name, 'foobator@example.com');
+        t.equal(typeof doc.timestamp, 'number');
+        t.end();
+      });
     });
   });
 
