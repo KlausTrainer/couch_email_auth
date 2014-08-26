@@ -1,0 +1,12 @@
+host=127.0.0.1
+port=0
+couchDbBaseUrl=http://admin:secret@localhost:5984
+usersDb=test_suite_users
+
+[smtp]
+  port=2525
+  host=localhost
+  ignoreTLS=true
+
+[email]
+  from=couch_email_auth@example.com

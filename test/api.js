@@ -1,12 +1,19 @@
 "use strict";
 
 process.env.NODE_ENV = 'test';
+// custom testconfig
+process.argv = [
+  'node', // will get stripped by rc
+  '/Users/robert/couch_email_auth/test/config.js', // will get stripped by rc
+  '--config',
+  'test/fixtures/integrationtestrc'
+];
 
 var test = require('tape'),
     s = require('../lib/server'),
     request = require('request'),
     testRequest = require('./test_helper').testRequest,
-    config = require('../lib/config'),
+    config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
     simplesmtp = require("simplesmtp");
@@ -27,7 +34,7 @@ test('setup', function(t) {
     }, function(err, response, body) {
       t.notOk(err, 'set CouchDB test configuration');
       smtp = simplesmtp.createServer({disableDNSValidation: true});
-      smtp.listen(config.mailer.port, function(error) {
+      smtp.listen(config.smtp.port, function(error) {
         t.notOk(error, 'start smtp server');
         t.end();
       });
