@@ -1,7 +1,6 @@
 "use strict";
 
 process.env.NODE_ENV = 'test';
-
 // custom testconfig
 process.argv = [
   'node', // will get stripped by rc
@@ -11,10 +10,10 @@ process.argv = [
 ];
 
 var test = require('tape'),
-    config = require('../lib/config');
+    render = require('../lib/template');
 
 test('simple', function(t) {
-  var conf = config();
-  t.equal(conf.email.template, 'test/fixtures/mail_template');
+  var mail = render({link: 'http://example.com'});
+  t.equal(mail, 'Testtemplatetext - http://example.com\n');
   t.end();
 });

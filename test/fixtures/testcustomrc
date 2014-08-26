@@ -1,2 +1,2 @@
 [email]
-  template = ./mail_template
+  template = test/fixtures/mail_template
