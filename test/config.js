@@ -2,15 +2,19 @@
 
 process.env.NODE_ENV = 'test';
 
+// custom testconfig
+process.argv = [
+  'node', // will get stripped by rc
+  '/Users/robert/couch_email_auth/test/config.js', // will get stripped by rc
+  '--config',
+  'test/fixtures/testcustomrc'
+];
+
 var test = require('tape'),
     config = require('../lib/config');
 
-var address, port, server, smtp;
-
 test('simple', function(t) {
-  config('./fixtures/testrc', function(err, conf) {
-    t.notOk(err);
-    t.Ok(conf);
-    t.end();
-  });
+  var conf = config();
+  t.equal(conf.email.template, './mail_template')
+  t.end();
 });

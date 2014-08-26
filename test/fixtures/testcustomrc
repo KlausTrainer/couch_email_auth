@@ -1,5 +1,2 @@
-[smtp]
-
-
-[mail]
+[email]
   template = ./mail_template
