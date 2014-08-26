@@ -9,3 +9,4 @@ usersDb=test_suite_users
   ignoreTLS=true
 
 [email]
+  from=couch_email_auth@example.com
