@@ -23,9 +23,13 @@
   "homepage": "https://github.com/KlausTrainer/couch_email_auth",
   "devDependencies": {
     "request": "~2.36.0",
-    "tape": "~2.13.3"
+    "tape": "~2.13.3",
+    "simplesmtp": "~0.3.32"
   },
   "dependencies": {
-    "nano": "~5.10.0"
+    "mustache": "~0.8.2",
+    "nano": "~5.10.0",
+    "nodemailer": "~1.1.1",
+    "rc": "~0.5.0"
   }
 }
