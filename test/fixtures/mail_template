@@ -1,1 +1,1 @@
-Testtemplatetext - {{{sign_in_link}}}
+Hi {{username}} - {{{sign_in_link}}}

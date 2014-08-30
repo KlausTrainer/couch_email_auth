@@ -13,7 +13,10 @@ var test = require('tape'),
     render = require('../lib/template');
 
 test('simple', function(t) {
-  var text = render({sign_in_link: 'http://example.com'});
-  t.equal(text, 'Testtemplatetext - http://example.com\n');
+  var text = render({
+    sign_in_link: 'http://example.com',
+    username: "Rockobär"
+  });
+  t.equal(text, 'Hi Rockobär - http://example.com\n');
   t.end();
 });

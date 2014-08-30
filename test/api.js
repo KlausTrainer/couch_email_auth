@@ -88,13 +88,17 @@ test('POST /', function(t) {
     request({
       method: 'POST',
       uri: requestUri,
-      body: '{"email":"' + expectedToEmail + '"}'
+      json: true,
+      body: {
+        email: expectedToEmail,
+        username: "Foobatoruser"
+      }
     }, function(err, response, body) {
       t.equal(response.statusCode, 200);
-      t.equal(body, '{"ok":true}');
+      t.ok(body.ok);
       t.equal(actualFromEmail, expectedFromEmail);
       t.equal(actualToEmail, expectedToEmail);
-      t.ok(emailBody.indexOf('Testtemplatetext - ' + requestUri) >= 0);
+      t.ok(emailBody.indexOf('Hi Foobatoruser - ' + requestUri) !== -1, 'mailbody');
       t.end();
     });
   });
@@ -108,6 +112,26 @@ test('POST /', function(t) {
       db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
         t.notOk(err, 'document missing');
         t.equal(doc.name, 'foobator@example.com');
+        t.equal(typeof doc.timestamp, 'number');
+        t.end();
+      });
+    });
+  });
+
+  t.test('using names is possible', function(t) {
+    request({
+      method: 'POST',
+      uri: 'http://' + address + ':' + port,
+      json: true,
+      body: {
+        email: "rockoartischocko@example.com",
+        username: "Rocko Artischocko"
+      }
+    }, function(err, response, body) {
+      db.get('org.couchdb.user:rockoartischocko@example.com', function(err, doc) {
+        t.notOk(err, 'document missing');
+        t.equal(doc.username, 'Rocko Artischocko');
+        t.equal(doc.name, 'rockoartischocko@example.com');
         t.equal(typeof doc.timestamp, 'number');
         t.end();
       });
