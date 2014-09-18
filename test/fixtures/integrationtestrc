@@ -2,6 +2,7 @@ host=127.0.0.1
 port=0
 couchDbBaseUrl=http://admin:secret@localhost:5984
 usersDb=test_suite_users
+sessionTimeout=1
 
 [smtp]
   port=2525
