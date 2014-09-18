@@ -9,5 +9,6 @@ usersDb=test_suite_users
   ignoreTLS=true
 
 [email]
-  from=couch_email_auth@example.com
+  from = couch_email_auth@example.com
+  subject = Sign In
   template = test/fixtures/mail_template

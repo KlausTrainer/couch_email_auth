@@ -69,12 +69,16 @@ test('POST /', function(t) {
     var emailBody = '',
         expectedToEmail = 'foobator42@example.com',
         expectedFromEmail = 'couch_email_auth@example.com',
-        actualFromEmail, actualToEmail,
+        expectedSubject = 'Sign In',
+        actualFromEmail,
+        actualToEmail,
+        actualSubject,
         requestUri = 'http://' + address + ':' + port;
 
     smtp.on("startData", function(connection) {
       actualFromEmail = connection.from;
       actualToEmail = connection.to[0];
+      actualSubject = connection.subject;
     });
 
     smtp.on("data", function(connection, chunk) {
