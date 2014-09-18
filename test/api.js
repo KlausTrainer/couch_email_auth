@@ -43,7 +43,34 @@ test('setup', function(t) {
 });
 
 test('POST /', function(t) {
-  var context = {address: address, port: port, t: t};
+  var emailBody,
+      expectedToEmail,
+      expectedFromEmail = 'couch_email_auth@example.com',
+      expectedSubject = 'Sign In',
+      actualFromEmail,
+      actualToEmail,
+      actualSubject,
+      requestUri = 'http://' + address + ':' + port,
+      context = {address: address, port: port, t: t};
+
+  t.test('setup', function(t) {
+    smtp.on("startData", function(connection) {
+      emailBody = '';
+      actualFromEmail = connection.from;
+      actualToEmail = connection.to[0];
+      actualSubject = connection.subject;
+    });
+
+    smtp.on("data", function(connection, chunk) {
+      emailBody += chunk.toString();
+    });
+
+    smtp.on("dataReady", function(connection, callback) {
+      callback(null, "ABC1" + Math.abs(Math.random() * 1000000)); // ABC1 is the queue id to be advertised to the client
+    });
+
+    t.end();
+  });
 
   testRequest(
     context, 'POST to / fails with empty body',
@@ -62,32 +89,11 @@ test('POST /', function(t) {
 
   testRequest(
     context, 'POST to / fails with wrong email address',
-    'POST', '{"email":"foo@bar"}',
+    'POST', '{"email":"test"}',
     400, '{"error":"invalid email"}');
 
   t.test('POST to / works with valid email address and an email is sent', function(t) {
-    var emailBody = '',
-        expectedToEmail = 'foobator42@example.com',
-        expectedFromEmail = 'couch_email_auth@example.com',
-        expectedSubject = 'Sign In',
-        actualFromEmail,
-        actualToEmail,
-        actualSubject,
-        requestUri = 'http://' + address + ':' + port;
-
-    smtp.on("startData", function(connection) {
-      actualFromEmail = connection.from;
-      actualToEmail = connection.to[0];
-      actualSubject = connection.subject;
-    });
-
-    smtp.on("data", function(connection, chunk) {
-      emailBody += chunk.toString();
-    });
-
-    smtp.on("dataReady", function(connection, callback) {
-      callback(null, "ABC1" + Math.abs(Math.random() * 1000000)); // ABC1 is the queue id to be advertised to the client
-    });
+    expectedToEmail = 'foobator42@example.com',
 
     request({
       method: 'POST',
@@ -95,14 +101,37 @@ test('POST /', function(t) {
       json: true,
       body: {
         email: expectedToEmail,
-        username: "Foobatoruser"
+        username: "Foo Bator"
       }
     }, function(err, response, body) {
       t.equal(response.statusCode, 200);
       t.ok(body.ok);
       t.equal(actualFromEmail, expectedFromEmail);
       t.equal(actualToEmail, expectedToEmail);
-      t.ok(emailBody.indexOf('Hi Foobatoruser - ' + requestUri) !== -1, 'mailbody');
+      t.ok(emailBody.indexOf('Hi Foo Bator') !== -1, 'mailbody');
+      t.ok(emailBody.indexOf(requestUri) !== -1, 'mailbody');
+      t.end();
+    });
+  });
+
+  t.test('POST to / works with valid email address and an email is sent', function(t) {
+    expectedToEmail = 'foobator42@localhost',
+
+    request({
+      method: 'POST',
+      uri: requestUri,
+      json: true,
+      body: {
+        email: expectedToEmail,
+        username: "Local Foo Bator"
+      }
+    }, function(err, response, body) {
+      t.equal(response.statusCode, 200);
+      t.ok(body.ok);
+      t.equal(actualFromEmail, expectedFromEmail);
+      t.equal(actualToEmail, expectedToEmail);
+      t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
+      t.ok(emailBody.indexOf(requestUri) !== -1, 'mailbody');
       t.end();
     });
   });
