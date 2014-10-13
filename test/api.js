@@ -243,6 +243,18 @@ test('GET /', function(t) {
     });
   });
 
+  t.test('GET to / fails if email does not exist', function(t) {
+    request({
+      method: 'GET',
+      uri: requestUri + '?email=lalala@example.com&token=1234',
+      json: true
+    }, function(err, response, body) {
+      t.equal(response.statusCode, 401);
+      t.equal(body.error, 'unauthorized');
+      t.end();
+    });
+  });
+
   t.test('GET to / works if email and token are valid', function(t) {
     request({
       method: 'POST',
