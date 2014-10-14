@@ -145,7 +145,8 @@ test('POST /', function(t) {
       db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
         t.notOk(err, 'document missing');
         t.equal(doc.name, 'foobator@example.com');
-        t.equal(typeof doc.timestamp, 'number');
+        t.equal(typeof doc.couch_email_auth_secret, 'string');
+        t.equal(typeof doc.couch_email_auth_timestamp, 'number');
         t.end();
       });
     });
@@ -165,7 +166,8 @@ test('POST /', function(t) {
         t.notOk(err, 'document missing');
         t.equal(doc.username, 'Rocko Artischocko');
         t.equal(doc.name, 'rockoartischocko@example.com');
-        t.equal(typeof doc.timestamp, 'number');
+        t.equal(typeof doc.couch_email_auth_secret, 'string');
+        t.equal(typeof doc.couch_email_auth_timestamp, 'number');
         t.end();
       });
     });
