@@ -3,6 +3,7 @@ port=0
 couchDbBaseUrl=http://admin:secret@localhost:5984
 usersDb=test_suite_users
 sessionTimeout=1
+redirectLocation=http://localhost:5984/
 
 [smtp]
   port=2525

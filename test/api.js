@@ -276,11 +276,13 @@ test('GET /', function(t) {
       request({
         method: 'GET',
         uri: link,
-        json: true
+        json: true,
+        followRedirect: false
       }, function(err, response, body) {
-        t.equal(response.statusCode, 200);
+        t.equal(response.statusCode, 302);
         t.ok(body.ok);
         t.ok(body.name, email);
+        t.equal(response.headers['location'], config.redirectLocation);
         t.ok(response.headers['set-cookie']);
         t.end();
       });
@@ -306,9 +308,10 @@ test('GET /', function(t) {
       request({
         method: 'GET',
         uri: link,
-        json: true
+        json: true,
+        followRedirect: false
       }, function(err, response, body) {
-        t.equal(response.statusCode, 200);
+        t.equal(response.statusCode, 302);
         t.ok(body.ok);
 
         request({
