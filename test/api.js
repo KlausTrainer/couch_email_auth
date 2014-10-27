@@ -18,13 +18,12 @@ var test = require('tape'),
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
     simplesmtp = require('simplesmtp');
 
-var address, port, server, smtp;
+var uri, server, smtp;
 
 test('setup', function(t) {
   s.run(function(instance) {
     server = instance;
-    address = server.address().address;
-    port = server.address().port;
+    uri = server.info.uri;
 
     // setup CouchDB with test config
     request({
@@ -50,8 +49,7 @@ test('POST /', function(t) {
       actualFromEmail,
       actualToEmail,
       actualSubject,
-      requestUri = 'http://' + address + ':' + port,
-      context = {address: address, port: port, t: t};
+      context = {uri: uri, t: t};
 
   t.test('setup', function(t) {
     smtp.on("startData", function(connection) {
@@ -102,7 +100,7 @@ test('POST /', function(t) {
 
     request({
       method: 'POST',
-      uri: requestUri,
+      uri: uri,
       json: true,
       body: {
         email: expectedToEmail,
@@ -114,7 +112,7 @@ test('POST /', function(t) {
       t.equal(actualFromEmail, expectedFromEmail);
       t.equal(actualToEmail, expectedToEmail);
       t.ok(emailBody.indexOf('Hi Foo Bator') !== -1, 'mailbody');
-      t.ok(emailBody.indexOf(requestUri) !== -1, 'mailbody');
+      t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
       t.end();
     });
   });
@@ -124,7 +122,7 @@ test('POST /', function(t) {
 
     request({
       method: 'POST',
-      uri: requestUri,
+      uri: uri,
       json: true,
       body: {
         email: expectedToEmail,
@@ -136,7 +134,7 @@ test('POST /', function(t) {
       t.equal(actualFromEmail, expectedFromEmail);
       t.equal(actualToEmail, expectedToEmail);
       t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
-      t.ok(emailBody.indexOf(requestUri) !== -1, 'mailbody');
+      t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
       t.end();
     });
   });
@@ -144,7 +142,7 @@ test('POST /', function(t) {
   t.test('saves login credentials to CouchDB', function(t) {
     request({
       method: 'POST',
-      uri: 'http://' + address + ':' + port,
+      uri: uri,
       body: '{"email":"foobator@example.com"}'
     }, function(err, response, body) {
       db.get('org.couchdb.user:foobator@example.com', function(err, doc) {
@@ -160,7 +158,7 @@ test('POST /', function(t) {
   t.test('using names is possible', function(t) {
     request({
       method: 'POST',
-      uri: 'http://' + address + ':' + port,
+      uri: uri,
       json: true,
       body: {
         email: "rockoartischocko@example.com",
@@ -184,7 +182,7 @@ test('POST /', function(t) {
 test('GET /', function(t) {
   var email = 'foobator@example.com',
       emailBody,
-      requestUri = 'http://' + address + ':' + port;
+      requestUri = uri;
 
   t.test('setup', function(t) {
     smtp.on("startData", function(connection) {
@@ -364,7 +362,7 @@ test('GET /', function(t) {
 });
 
 test('teardown', function(t) {
-  server.close();
+  server.stop();
 
   // reset CouchDB config
   request({

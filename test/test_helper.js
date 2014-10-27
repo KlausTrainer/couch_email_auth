@@ -3,14 +3,12 @@
 var request = require('request');
 
 exports.testRequest = function(context, testDescription, requestMethod, requestBody, expectedStatusCode, expectedBody) {
-  var t = context.t,
-      address = context.address,
-      port = context.port;
+  var t = context.t;
 
   t.test(testDescription, function(t)  {
     request({
       method: requestMethod,
-      uri: 'http://' + address + ':' + port,
+      uri: context.uri,
       body: requestBody
     }, function(err, response, body) {
       t.equal(response.statusCode, expectedStatusCode);
