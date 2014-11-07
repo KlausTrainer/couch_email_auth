@@ -78,6 +78,11 @@ test('POST /', function(t) {
     400, '{"error":"invalid request JSON"}');
 
   testRequest(
+    context, 'POST to / fails with empty JSON object',
+    'POST', '{}',
+    400, '{"error":"invalid email"}');
+
+  testRequest(
     context, 'POST to / fails with no email property',
     'POST', '{"foo":42}',
     400, '{"error":"invalid email"}');
