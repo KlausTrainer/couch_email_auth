@@ -117,25 +117,28 @@ test('POST /', function(t) {
     });
   });
 
-  t.test('POST to / works with valid email address and an email is sent', function(t) {
-    expectedToEmail = 'foobator42@localhost',
+  [uri, uri + '/foo/bar/baz'].forEach(function(uri) {
+    t.test('POST to ' + uri + ' works with valid email address and an email is sent', function(t) {
+      expectedToEmail = 'foobator42@localhost',
 
-    request({
-      method: 'POST',
-      uri: uri,
-      json: true,
-      body: {
-        email: expectedToEmail,
-        username: "Local Foo Bator"
-      }
-    }, function(err, response, body) {
-      t.equal(response.statusCode, 200);
-      t.ok(body.ok);
-      t.equal(actualFromEmail, expectedFromEmail);
-      t.equal(actualToEmail, expectedToEmail);
-      t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
-      t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
-      t.end();
+      request({
+        method: 'POST',
+        uri: uri,
+        json: true,
+        body: {
+          email: expectedToEmail,
+          username: "Local Foo Bator"
+        }
+      }, function(err, response, body) {
+        t.equal(response.statusCode, 200);
+        t.ok(body.ok);
+        t.equal(actualFromEmail, expectedFromEmail);
+        t.equal(actualToEmail, expectedToEmail);
+        t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
+        t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
+        t.ok(emailBody.indexOf('?email') !== -1, 'url is ok');
+        t.end();
+      });
     });
   });
 
@@ -260,34 +263,36 @@ test('GET /', function(t) {
     });
   });
 
-  t.test('GET to / works if email and token are valid', function(t) {
-    request({
-      method: 'POST',
-      uri: requestUri,
-      json: true,
-      body: {
-        email: email
-      }
-    }, function(err, response, body) {
-      var link;
-
-      t.equal(response.statusCode, 200);
-      t.ok(body.ok);
-
-      link = emailBody.match(/([^ ]+)$/)[1];
-
+  [requestUri, requestUri + '/foo/bar/baz'].forEach(function(uri) {
+    t.test('GET to ' + uri + ' works if email and token are valid', function(t) {
       request({
-        method: 'GET',
-        uri: link,
+        method: 'POST',
+        uri: uri,
         json: true,
-        followRedirect: false
+        body: {
+          email: email
+        }
       }, function(err, response, body) {
-        t.equal(response.statusCode, 302);
+        var link;
+
+        t.equal(response.statusCode, 200);
         t.ok(body.ok);
-        t.ok(body.name, email);
-        t.equal(response.headers['location'], config.redirectLocation);
-        t.ok(response.headers['set-cookie']);
-        t.end();
+
+        link = emailBody.match(/([^ ]+)$/)[1];
+
+        request({
+          method: 'GET',
+          uri: link,
+          json: true,
+          followRedirect: false
+        }, function(err, response, body) {
+          t.equal(response.statusCode, 302);
+          t.ok(body.ok);
+          t.ok(body.name, email);
+          t.equal(response.headers['location'], config.redirectLocation);
+          t.ok(response.headers['set-cookie']);
+          t.end();
+        });
       });
     });
   });
