@@ -73,7 +73,7 @@ test('POST /', function(t) {
   testRequest(
     context, 'POST to / fails with empty body',
     'POST', null,
-    400, '{"error":"invalid request JSON"}');
+    400, '{"error":"invalid email"}');
 
   testRequest(
     context, 'POST to / fails with empty JSON object',
