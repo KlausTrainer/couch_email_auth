@@ -135,6 +135,25 @@ test('POST /', function(t) {
       t.equal(actualToEmail, expectedToEmail);
       t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
       t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
+      t.ok(emailBody.indexOf('?email') !== -1, 'url is ok');
+      t.end();
+    });
+  });
+
+  t.test('POST to /foo/bar works with valid email address and an email is sent', function(t) {
+    expectedToEmail = 'foobator42@localhost',
+
+    request({
+      method: 'POST',
+      uri: uri + '/foo/bar',
+      json: true,
+      body: {
+        email: expectedToEmail,
+        username: "Local Foo Bator"
+      }
+    }, function(err, response, body) {
+      t.equal(response.statusCode, 200);
+      t.ok(emailBody.indexOf('foo/bar?email') !== -1, 'url is ok');
       t.end();
     });
   });
