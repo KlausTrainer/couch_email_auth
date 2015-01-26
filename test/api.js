@@ -95,28 +95,6 @@ test('POST /', function(t) {
     'POST', '{"email":"test"}',
     400, '{"error":"invalid email"}');
 
-  t.test('POST to / works with valid email address and an email is sent', function(t) {
-    expectedToEmail = 'foobator42@example.com',
-
-    request({
-      method: 'POST',
-      uri: uri,
-      json: true,
-      body: {
-        email: expectedToEmail,
-        username: "Foo Bator"
-      }
-    }, function(err, response, body) {
-      t.equal(response.statusCode, 200);
-      t.ok(body.ok);
-      t.equal(actualFromEmail, expectedFromEmail);
-      t.equal(actualToEmail, expectedToEmail);
-      t.ok(emailBody.indexOf('Hi Foo Bator') !== -1, 'mailbody');
-      t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
-      t.end();
-    });
-  });
-
   [uri, uri + '/foo/bar/baz'].forEach(function(uri) {
     t.test('POST to ' + uri + ' works with valid email address and an email is sent', function(t) {
       expectedToEmail = 'foobator42@localhost',
