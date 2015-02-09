@@ -19,3 +19,4 @@ redirectLocation = http://localhost:5984/
 [email]
   from = couch_email_auth@example.com
   subject = Sign In
+  template = default_mail_template
