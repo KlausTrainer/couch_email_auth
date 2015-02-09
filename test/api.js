@@ -114,6 +114,7 @@ test('POST /', function(t) {
         t.equal(actualToEmail, expectedToEmail);
         t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
         t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
+        t.ok(emailBody.indexOf('http:\/\/') !== -1, 'http scheme is used');
         t.ok(emailBody.indexOf('?email') !== -1, 'url is ok');
         t.end();
       });
