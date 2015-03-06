@@ -4,7 +4,10 @@ couch_email_auth provides passwordless authentication by sending the authenticat
 
 Every authentication token can only be used once, and as soon as a new token is used, any existing CouchDB authentication cookie is invalidated. Both the authentication token and the CouchDB authentication cookie have an expiration time, which can be configured independently for each.
 
-You can run couch_email_auth as a server behind CouchDB, using CouchDB's proxy feature, which is described in detail in the CouchDB documentation [here](http://docs.couchdb.org/en/latest/config/proxying.html). Let's start with a brief walk-through:
+You can run couch_email_auth behind CouchDB by using CouchDB's proxy feature. That means that CouchDB will forward HTTP requests that are sent to a particular endpoint (which is configurable), and couch_email_auth doesn't need to bind to a network interface that is reachable from outside. CouchDB's proxy feature is described in detail in the CouchDB documentation [here](http://docs.couchdb.org/en/latest/config/proxying.html).
+
+
+## Installation
 
 Clone the repo, install the dependencies, create a configuration, and start the server:
 
