@@ -1,53 +1,46 @@
 # couch_email_auth [![Build Status](https://travis-ci.org/KlausTrainer/couch_email_auth.svg?branch=master)](https://travis-ci.org/KlausTrainer/couch_email_auth)
 
-couch_email_auth provides passwordless authentication using tokens that are sent using email. After using the token the user gets a cookie that is valid for a predefined time. If the token got used once to get access it is invalidated.
+couch_email_auth provides passwordless authentication by sending the authenticating user a sign-in link via email. The sign-in link contains an authentication token, which gets exchanged for a CouchDB authentication cookie the first time a user follows the sign-in link.
 
-You can run couch_email_auth as a server behind a CouchDB using the proxy-feature. It is described in detail in the [CouchDB Docs](http://docs.couchdb.org/en/latest/config/proxying.html) but let us provide a short walkthrough:
+Every authentication token can only be used once, and as soon as a new token is used, any existing CouchDB authentication cookie is invalidated. Both the authentication token and the CouchDB authentication cookie have an expiration time, which can be configured independently for each.
 
-After cloning the repo, install the dependencies and create a configuration, start the server:
+You can run couch_email_auth as a server behind CouchDB, using CouchDB's proxy feature, which is described in detail in the CouchDB documentation [here](http://docs.couchdb.org/en/latest/config/proxying.html). Let's start with a brief walk-through:
 
-```
+Clone the repo, install the dependencies, create a configuration, and start the server:
+
+```sh
 npm install
 cp .couch_email_authrc-dist .couch_email_authrc
 node index.js
 ```
 
-Change the configuration saved in `couch_email_authrc` to your needs, in this expample we are using port 3000 for the service.
+Change the configuration in `.couch_email_authrc` according to your needs; in this example we are using port 3000 for the couch_email_auth service.
 
-Start your couchdb:
+Assuming that your CouchDB instance is running on `localhost` port `5984`, your admin username is `admin`, and your password is `secret`, run the following commands:
 
-```
-(sudo) couchdb
-
-```
-
-Given your admin username is `admin`, your password `secret` and the port of your Couch `5984` run:
-
-```
+```sh
 COUCH=http://admin:secret@localhost:5984
 curl -X PUT $COUCH/_config/httpd_global_handlers/_couch_email_auth \
-  -d '"{couch_httpd_proxy, handle_proxy_req, <<\"http://localhost:3000\">>}"'
+  --data-binary '"{couch_httpd_proxy, handle_proxy_req, <<\"http://localhost:3000\">>}"'
 ```
 
-**restart CouchDB**
-
-couch_email_auth is now available for your CouchApps and other applications at `http://localhost:5984/_couch_email_auth` - the same domain the CouchDB uses which is important as we are using cookies with timeouts for authentication after you received your email.
+couch_email_auth should now be available via your CouchDB instance at `http://localhost:5984/_couch_email_auth`.
 
 
 ## Usage
 
-Send a `POST` request containing JSON to the endpoint:
+Send the following `POST`-request to the couch_email_auth endpoint:
 
-```
+```sh
 curl -H Content-Type:application/json -X POST \
-http://localhost:3000 --data-binary '{"email": "andy@example.com","username": "Andy"}'
+  http://localhost:5984/_couch_email_auth --data-binary '{"email": "andy@example.com","username": "Andy"}'
 ```
 
 ### Request parameters
 
 ```
-email       (required)    The email address the token is getting mailed
-username    (optional)    The username of the user
+email       (required)    The email address the sign-in link is sent to
+username    (optional)    A username
 ```
 
 ### Templates
@@ -55,6 +48,6 @@ username    (optional)    The username of the user
 We are currently providing two template variables:
 
 ```
-username        The name of the user that tries to authenticate
-sign_in_link    The link that is used to authenticate
+username        The username
+sign_in_link    The sign-in link
 ```
