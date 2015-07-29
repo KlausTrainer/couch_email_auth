@@ -252,7 +252,8 @@ test('GET /', function(t) {
           email: email
         }
       }, function(err, response, body) {
-        var link;
+        var link,
+            cookie;
 
         t.equal(response.statusCode, 200);
         t.ok(body.ok);
@@ -269,8 +270,23 @@ test('GET /', function(t) {
           t.ok(body.ok);
           t.ok(body.name, email);
           t.equal(response.headers['location'], config.redirectLocation);
-          t.ok(response.headers['set-cookie']);
-          t.end();
+
+          cookie = response.headers['set-cookie'];
+          t.ok(cookie);
+
+          request({
+            method: 'GET',
+            uri: couchDbBaseUrl + '/_session',
+            json: true,
+            headers: {
+              cookie: cookie
+            }
+          }, function(err, response, body) {
+            t.equal(response.statusCode, 200);
+            t.ok(body.ok);
+            t.equal(body.userCtx.name, email);
+            t.end();
+          });
         });
       });
     });
