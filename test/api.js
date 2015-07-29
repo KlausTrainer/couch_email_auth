@@ -11,10 +11,12 @@ process.argv = [
 
 var test = require('tape'),
     s = require('../lib/server'),
+    crypto = require('crypto'),
     request = require('request'),
     testRequest = require('./test_helper').testRequest,
     config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
+    couchDbSessionUrl = couchDbBaseUrl + '/_session',
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
     simplesmtp = require('simplesmtp');
 
@@ -131,6 +133,7 @@ test('POST /', function(t) {
         t.notOk(err, 'document missing');
         t.equal(doc.name, 'foobator@example.com');
         t.equal(typeof doc.couch_email_auth_secret, 'string');
+        t.equal(typeof doc.couch_email_auth_password, 'string');
         t.equal(typeof doc.couch_email_auth_timestamp, 'number');
         t.end();
       });
@@ -152,6 +155,7 @@ test('POST /', function(t) {
         t.equal(doc.username, 'Rocko Artischocko');
         t.equal(doc.name, 'rockoartischocko@example.com');
         t.equal(typeof doc.couch_email_auth_secret, 'string');
+        t.equal(typeof doc.couch_email_auth_password, 'string');
         t.equal(typeof doc.couch_email_auth_timestamp, 'number');
         t.end();
       });
@@ -163,6 +167,7 @@ test('POST /', function(t) {
 
 test('GET /', function(t) {
   var email = 'foobator@example.com',
+      token = crypto.randomBytes(config.tokenSize).toString('hex'),
       emailBody,
       requestUri = uri;
 
@@ -209,7 +214,7 @@ test('GET /', function(t) {
   t.test('GET to / fails if email param is invalid', function(t) {
     request({
       method: 'GET',
-      uri: requestUri + '?email=test&token=1234',
+      uri: requestUri + '?email=test&token=' + token,
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 400);
@@ -224,8 +229,8 @@ test('GET /', function(t) {
       uri: requestUri + '?email=' + email + '&token=1234',
       json: true
     }, function(err, response, body) {
-      t.equal(response.statusCode, 401);
-      t.equal(body.error, 'unauthorized');
+      t.equal(response.statusCode, 400);
+      t.equal(body.error, 'invalid token');
       t.end();
     });
   });
@@ -233,7 +238,7 @@ test('GET /', function(t) {
   t.test('GET to / fails if email does not exist', function(t) {
     request({
       method: 'GET',
-      uri: requestUri + '?email=lalala@example.com&token=1234',
+      uri: requestUri + '?email=lalala@example.com&token=' + token,
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 401);
@@ -252,8 +257,7 @@ test('GET /', function(t) {
           email: email
         }
       }, function(err, response, body) {
-        var link,
-            cookie;
+        var link;
 
         t.equal(response.statusCode, 200);
         t.ok(body.ok);
@@ -266,24 +270,21 @@ test('GET /', function(t) {
           json: true,
           followRedirect: false
         }, function(err, response, body) {
+          var cookie = response.headers['set-cookie'];
+
           t.equal(response.statusCode, 302);
           t.ok(body.ok);
           t.ok(body.name, email);
           t.equal(response.headers['location'], config.redirectLocation);
 
-          cookie = response.headers['set-cookie'];
-          t.ok(cookie);
-
           request({
             method: 'GET',
-            uri: couchDbBaseUrl + '/_session',
+            uri: couchDbSessionUrl,
             json: true,
             headers: {
               cookie: cookie
             }
           }, function(err, response, body) {
-            t.equal(response.statusCode, 200);
-            t.ok(body.ok);
             t.equal(body.userCtx.name, email);
             t.end();
           });
@@ -359,6 +360,59 @@ test('GET /', function(t) {
       }, 1000);
     });
   });
+
+  t.test('getting new tokens for the same user does not invalidate existing sessions', function(t) {
+    var postRequestOptions = {
+      method: 'POST',
+      uri: uri,
+      json: true,
+      body: {
+        email: email
+      }
+    };
+
+    request(postRequestOptions, function(err, response, body) {
+      var link;
+
+      t.equal(response.statusCode, 200);
+      t.ok(body.ok);
+
+      link = emailBody.match(/([^ ]+)$/)[1];
+
+      request({
+        method: 'GET',
+        uri: link,
+        json: true,
+        followRedirect: false
+      }, function(err, response, body) {
+        var cookie = response.headers['set-cookie'],
+            sessionRequestOptions = {
+              method: 'GET',
+              uri: couchDbSessionUrl,
+              json: true,
+              headers: {
+                cookie: cookie
+              }
+            };
+
+        request(sessionRequestOptions, function(err, response, body) {
+          t.equal(body.userCtx.name, email);
+
+          request(postRequestOptions, function(err, response, body) {
+            t.equal(response.statusCode, 200);
+            t.ok(body.ok);
+
+            request(sessionRequestOptions, function(err, response, body) {
+              t.equal(body.userCtx.name, email);
+              t.end();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  t.end();
 });
 
 test('teardown', function(t) {
