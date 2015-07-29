@@ -7,6 +7,9 @@ usersDb = _users
 ; (which is part of the sign-in link) is valid
 tokenExpiryTime = 3600
 
+; the size of the authentication token in bytes
+tokenSize = 16
+
 ; redirect to this location after a successful login
 redirectLocation = http://localhost:5984/
 
