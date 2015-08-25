@@ -3,6 +3,10 @@ port = 3000
 couchDbBaseUrl = http://admin:secret@localhost:5984
 usersDb = _users
 
+; the sign-in link URL scheme
+; the value can either be http or https
+scheme = http
+
 ; the time in seconds the authentication token
 ; (which is part of the sign-in link) is valid
 tokenExpiryTime = 3600
