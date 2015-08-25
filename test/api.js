@@ -74,28 +74,23 @@ test('POST /', function(t) {
 
   testRequest(
     context, 'POST to / fails with empty body',
-    'POST', null,
-    400, '{"error":"invalid email"}');
+    'POST', null, 400);
 
   testRequest(
     context, 'POST to / fails with empty JSON object',
-    'POST', '{}',
-    400, '{"error":"invalid email"}');
+    'POST', '{}', 400);
 
   testRequest(
     context, 'POST to / fails with no email property',
-    'POST', '{"foo":42}',
-    400, '{"error":"invalid email"}');
+    'POST', '{"foo":42}', 400);
 
   testRequest(
     context, 'POST to / fails with wrong email address',
-    'POST', '{"email":42}',
-    400, '{"error":"invalid email"}');
+    'POST', '{"email":42}', 400);
 
   testRequest(
     context, 'POST to / fails with wrong email address',
-    'POST', '{"email":"test"}',
-    400, '{"error":"invalid email"}');
+    'POST', '{"email":"test"}', 400);
 
   [uri, uri + '/foo/bar/baz'].forEach(function(uri) {
     t.test('POST to ' + uri + ' works with valid email address and an email is sent', function(t) {
@@ -194,7 +189,7 @@ test('GET /', function(t) {
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 400);
-      t.equal(body.error, "missing 'email' query parameter");
+      t.ok(body.message.match(/"email" is required/));
       t.end();
     });
   });
@@ -206,7 +201,7 @@ test('GET /', function(t) {
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 400);
-      t.equal(body.error, "missing 'token' query parameter");
+      t.ok(body.message.match(/"token" is required/));
       t.end();
     });
   });
@@ -218,7 +213,7 @@ test('GET /', function(t) {
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 400);
-      t.equal(body.error, 'invalid email');
+      t.ok(body.message.match(/"email" must be a valid email/));
       t.end();
     });
   });
@@ -230,7 +225,7 @@ test('GET /', function(t) {
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 400);
-      t.equal(body.error, 'invalid token');
+      t.ok(body.message.match(/"token" length must be 32 characters long/));
       t.end();
     });
   });
@@ -242,7 +237,8 @@ test('GET /', function(t) {
       json: true
     }, function(err, response, body) {
       t.equal(response.statusCode, 401);
-      t.equal(body.error, 'unauthorized');
+      t.equal(body.error, 'Unauthorized');
+      t.equal(body.message, 'unauthorized');
       t.end();
     });
   });
@@ -324,7 +320,8 @@ test('GET /', function(t) {
           json: true
         }, function(err, response, body) {
           t.equal(response.statusCode, 401);
-          t.equal(body.error, 'unauthorized');
+          t.equal(body.error, 'Unauthorized');
+          t.equal(body.message, 'unauthorized');
           t.end();
         });
       });
@@ -354,7 +351,8 @@ test('GET /', function(t) {
           json: true
         }, function(err, response, body) {
           t.equal(response.statusCode, 401);
-          t.equal(body.error, 'unauthorized');
+          t.equal(body.error, 'Unauthorized');
+          t.equal(body.message, 'unauthorized');
           t.end();
         });
       }, 1000);

@@ -12,7 +12,11 @@ exports.testRequest = function(context, testDescription, requestMethod, requestB
       body: requestBody
     }, function(err, response, body) {
       t.equal(response.statusCode, expectedStatusCode);
-      t.equal(body, expectedBody);
+
+      if (expectedBody) {
+        t.equal(body, expectedBody);
+      }
+
       t.end();
     });
   });
