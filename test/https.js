@@ -15,10 +15,8 @@ delete require.cache[require.resolve('../lib/server')];
 var test = require('tape'),
     s = require('../lib/server'),
     request = require('request'),
-    testRequest = require('./test_helper').testRequest,
     config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
-    db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
     simplesmtp = require('simplesmtp');
 
 var uri, server, smtp;
