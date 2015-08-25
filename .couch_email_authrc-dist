@@ -7,15 +7,17 @@ usersDb = _users
 ; the value can either be http or https
 scheme = http
 
+; whitelist of all hosts that are allowed in the redirect location
+; after successful authentication
+; if missing or empty any host is allowed
+allowedRedirectHosts = 127.0.0.1:5984, localhost:5984, example.com, example.org
+
 ; the time in seconds the authentication token
 ; (which is part of the sign-in link) is valid
 tokenExpiryTime = 3600
 
 ; the size of the authentication token in bytes
 tokenSize = 16
-
-; redirect to this location after a successful login
-redirectLocation = http://localhost:5984/
 
 ; smtp settings
 [smtp]

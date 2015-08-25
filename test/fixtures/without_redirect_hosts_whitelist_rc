@@ -2,7 +2,6 @@ host=127.0.0.1
 port=0
 couchDbBaseUrl=http://admin:secret@localhost:5984
 usersDb=test_suite_users
-allowedRedirectHosts = localhost:5984, example.com
 tokenExpiryTime=1
 scheme=http
 

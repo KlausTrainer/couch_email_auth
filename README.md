@@ -36,14 +36,15 @@ Send the following `POST`-request to the couch_email_auth endpoint:
 
 ```sh
 curl -H Content-Type:application/json -X POST \
-  http://localhost:5984/_couch_email_auth --data-binary '{"email": "andy@example.com","username": "Andy"}'
+  http://localhost:5984/_couch_email_auth --data-binary '{"redirectLocation": "http://example.com/app", "email": "andy@example.com", "username": "Andy"}'
 ```
 
 ### Request parameters
 
 ```
-email       (required)    The email address the sign-in link is sent to
-username    (optional)    A username
+redirectLocation (required) Redirect to this location after authentication
+email            (required) The email address the sign-in link is sent to
+username         (optional) A username
 ```
 
 ### Templates

@@ -6,7 +6,7 @@ process.argv = [
   'node', // will get stripped by rc
   '/Users/robert/couch_email_auth/test/config.js', // will get stripped by rc
   '--config',
-  'test/fixtures/schemetesthttpsrc'
+  'test/fixtures/without_redirect_hosts_whitelist_rc'
 ];
 
 // delete the cache in order to make sure that a new config is getting loaded
@@ -17,7 +17,6 @@ var test = require('tape'),
     request = require('request'),
     config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
-    redirectLocation = couchDbBaseUrl + '/',
     simplesmtp = require('simplesmtp');
 
 var uri, server, smtp;
@@ -44,55 +43,25 @@ test('setup', function(t) {
 });
 
 test('POST /', function(t) {
-  var emailBody,
-      expectedToEmail,
-      expectedFromEmail = 'couch_email_auth@example.com',
-      expectedSubject = 'Sign In',
-      actualFromEmail,
-      actualToEmail,
-      actualSubject,
-      context = {uri: uri, t: t};
-
-  t.test('setup', function(t) {
-    smtp.on('startData', function(connection) {
-      emailBody = '';
-      actualFromEmail = connection.from;
-      actualToEmail = connection.to[0];
-      actualSubject = connection.subject;
-    });
-
-    smtp.on('data', function(connection, chunk) {
-      emailBody += chunk.toString();
-    });
-
-    smtp.on('dataReady', function(connection, callback) {
-      callback(null, 'ABC1' + Math.abs(Math.random() * 1000000)); // ABC1 is the queue id to be advertised to the client
-    });
-
-    t.end();
-  });
-
-  t.test('it is possible to change the uri schemename', function(t) {
-    expectedToEmail = 'foobator42@localhost',
-
-    request({
-      method: 'POST',
-      uri: uri,
-      json: true,
-      body: {
-        redirectLocation: redirectLocation,
-        email: expectedToEmail,
-        username: 'Local Foo Bator'
-      }
-    }, function(err, response, body) {
-      t.equal(response.statusCode, 200);
-      t.ok(body.ok);
-      t.equal(actualFromEmail, expectedFromEmail);
-      t.equal(actualToEmail, expectedToEmail);
-      t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
-      t.ok(emailBody.indexOf('https:\/\/') !== -1, 'https scheme is used');
-      t.ok(emailBody.indexOf('?email') !== -1, 'url is ok');
-      t.end();
+  [
+    '127.0.0.1:5984',
+    'localhost',
+    'replication.host'
+  ].forEach(function(host) {
+    t.test(host, function(t) {
+      request({
+        method: 'POST',
+        uri: uri,
+        json: true,
+        body: {
+          redirectLocation: 'http://' + host + '/',
+          email: "rockoartischocko@example.com"
+        }
+      }, function(err, response, body) {
+        t.equal(response.statusCode, 200);
+        t.ok(body.ok);
+        t.end();
+      });
     });
   });
 });
