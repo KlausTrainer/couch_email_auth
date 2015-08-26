@@ -266,7 +266,7 @@ test('GET /', function(t) {
           json: true,
           followRedirect: false
         }, function(err, response, body) {
-          var cookie = response.headers['set-cookie'];
+          var cookie = response.headers['set-cookie'][0].split(';')[0];
 
           t.equal(response.statusCode, 302);
           t.ok(body.ok);
@@ -383,15 +383,16 @@ test('GET /', function(t) {
         json: true,
         followRedirect: false
       }, function(err, response, body) {
-        var cookie = response.headers['set-cookie'],
-            sessionRequestOptions = {
-              method: 'GET',
-              uri: couchDbSessionUrl,
-              json: true,
-              headers: {
-                cookie: cookie
-              }
-            };
+        var cookie = response.headers['set-cookie'][0].split(';')[0];
+
+        var sessionRequestOptions = {
+          method: 'GET',
+          uri: couchDbSessionUrl,
+          json: true,
+          headers: {
+            cookie: cookie
+          }
+        };
 
         request(sessionRequestOptions, function(err, response, body) {
           t.equal(body.userCtx.name, email);
