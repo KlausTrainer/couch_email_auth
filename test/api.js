@@ -16,7 +16,6 @@ var test = require('tape'),
     testRequest = require('./test_helper').testRequest,
     config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
-    couchDbSessionUrl = couchDbBaseUrl + '/_session',
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
     simplesmtp = require('simplesmtp');
 
@@ -275,7 +274,7 @@ test('GET /', function(t) {
 
           request({
             method: 'GET',
-            uri: couchDbSessionUrl,
+            uri: config.couchDbSessionUrl,
             json: true,
             headers: {
               cookie: cookie
@@ -389,7 +388,7 @@ test('GET /', function(t) {
 
         var sessionRequestOptions = {
           method: 'GET',
-          uri: couchDbSessionUrl,
+          uri: config.couchDbSessionUrl,
           json: true,
           headers: {
             cookie: cookie
@@ -409,6 +408,142 @@ test('GET /', function(t) {
               t.equal(response.statusCode, 200);
               t.ok(body.ok);
               t.equal(body.userCtx.name, email);
+              t.end();
+            });
+          });
+        });
+      });
+    });
+  });
+
+  t.end();
+});
+
+test('DELETE /', function(t) {
+  var email = 'foobator@example.com',
+      emailBody;
+
+  t.test('setup', function(t) {
+    smtp.on("startData", function(connection) {
+      emailBody = '';
+    });
+
+    smtp.on("data", function(connection, chunk) {
+      emailBody += chunk.toString();
+    });
+
+    smtp.on("dataReady", function(connection, callback) {
+      callback(null, "ABC1" + Math.abs(Math.random() * 1000000)); // ABC1 is the queue id to be advertised to the client
+    });
+
+    t.end();
+  });
+
+  t.test('requires an `AuthSession` cookie value', function(t) {
+    t.test('missing cookie', function(t) {
+      request({
+        method: 'DELETE',
+        uri: uri,
+        json: true
+      }, function(err, response, body) {
+        t.equal(response.statusCode, 400);
+        t.equal(body.error, 'Bad Request');
+        t.equal(body.message,
+          'child "cookie" fails because ["cookie" is required]');
+        t.end();
+      });
+    });
+
+    t.test('missing `AuthSession` value', function(t) {
+      request({
+        method: 'DELETE',
+        uri: uri,
+        json: true,
+        headers: {
+          cookie: 'foobar'
+        }
+      }, function(err, response, body) {
+        t.equal(response.statusCode, 400);
+        t.equal(body.error, 'Bad Request');
+        t.equal(body.message, 'Invalid cookie header');
+        t.end();
+      });
+    });
+
+    t.test('cookie with invalid `AuthSession` value', function(t) {
+      request({
+        method: 'DELETE',
+        uri: uri,
+        json: true,
+        headers: {
+          cookie: 'AuthSession=foobar'
+        }
+      }, function(err, response, body) {
+        t.equal(response.statusCode, 400);
+        t.equal(body.error, 'Bad Request');
+        t.equal(
+          body.message,
+          'Malformed AuthSession cookie. Please clear your cookies.');
+        t.end();
+      });
+    });
+
+    t.end
+  });
+
+  t.test('deletes the session', function(t) {
+    request({
+      method: 'POST',
+      uri: uri,
+      json: true,
+      body: {
+        email: email
+      }
+    }, function(err, response, body) {
+      var link;
+
+      t.equal(response.statusCode, 200);
+      t.ok(body.ok);
+
+      link = emailBody.match(/([^ ]+)$/)[1];
+
+      request({
+        method: 'GET',
+        uri: link,
+        json: true,
+        followRedirect: false
+      }, function(err, response, body) {
+        var cookie = response.headers['set-cookie'][0].split(';')[0];
+
+        var sessionRequestOptions = {
+          method: 'GET',
+          uri: config.couchDbSessionUrl,
+          json: true,
+          headers: {
+            cookie: cookie
+          }
+        };
+
+        request(sessionRequestOptions, function(err, response, body) {
+          t.equal(response.statusCode, 200);
+          t.ok(body.ok);
+          t.equal(body.userCtx.name, email);
+
+        request({
+          method: 'DELETE',
+          uri: uri,
+          json: true,
+          headers: {
+            cookie: cookie
+          }
+        }, function(err, response, body) {
+          t.equal(response.statusCode, 200);
+          t.ok(body.ok);
+
+            request(sessionRequestOptions, function(err, response, body) {
+              t.equal(response.statusCode, 200);
+              t.ok(body.ok);
+              t.equal(body.userCtx.name, null);
               t.end();
             });
           });
