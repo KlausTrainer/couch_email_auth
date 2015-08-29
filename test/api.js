@@ -281,6 +281,8 @@ test('GET /', function(t) {
               cookie: cookie
             }
           }, function(err, response, body) {
+            t.equal(response.statusCode, 200);
+            t.ok(body.ok);
             t.equal(body.userCtx.name, email);
             t.end();
           });
@@ -395,6 +397,8 @@ test('GET /', function(t) {
         };
 
         request(sessionRequestOptions, function(err, response, body) {
+          t.equal(response.statusCode, 200);
+          t.ok(body.ok);
           t.equal(body.userCtx.name, email);
 
           request(postRequestOptions, function(err, response, body) {
@@ -402,6 +406,8 @@ test('GET /', function(t) {
             t.ok(body.ok);
 
             request(sessionRequestOptions, function(err, response, body) {
+              t.equal(response.statusCode, 200);
+              t.ok(body.ok);
               t.equal(body.userCtx.name, email);
               t.end();
             });
