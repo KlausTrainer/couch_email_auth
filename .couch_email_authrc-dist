@@ -12,6 +12,10 @@ scheme = http
 ; if missing or empty any host is allowed
 allowedRedirectHosts = 127.0.0.1:5984, localhost:5984, example.com, example.org
 
+; set to true if providing a username shouln't be optional,
+; but required for every authentication request
+requireUsername = false
+
 ; the time in seconds the authentication token
 ; (which is part of the sign-in link) is valid
 tokenExpiryTime = 3600
