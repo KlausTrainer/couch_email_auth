@@ -431,8 +431,6 @@ test('GET /', function(t) {
       });
     });
   });
-
-  t.end();
 });
 
 test('DELETE /', function(t) {
