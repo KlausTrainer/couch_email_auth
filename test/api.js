@@ -470,7 +470,7 @@ test('DELETE /', function(t) {
       });
     });
 
-    t.test('cookie with invalid `AuthSession` value', function(t) {
+    t.test('cookie with malformed `AuthSession` value', function(t) {
       request({
         method: 'DELETE',
         uri: uri,
@@ -484,6 +484,21 @@ test('DELETE /', function(t) {
         t.equal(
           body.message,
           'Malformed AuthSession cookie. Please clear your cookies.');
+        t.end();
+      });
+    });
+
+    t.test('cookie with invalid `AuthSession` value', function(t) {
+      request({
+        method: 'DELETE',
+        uri: uri,
+        json: true,
+        headers: {
+          cookie: 'AuthSession=Zm9vYmF0b3JAZXhhbXBsZS5jb206NTVFMzJDODc6lYf4JMY9PZaz5tGyRNi8wmlrcwc'
+        }
+      }, function(err, response, body) {
+        t.equal(response.statusCode, 401);
+        t.equal(body.error, 'Unauthorized');
         t.end();
       });
     });
