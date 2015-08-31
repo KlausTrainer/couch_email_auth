@@ -3,24 +3,23 @@ port = 3000
 couchDbBaseUrl = http://admin:secret@localhost:5984
 usersDb = _users
 
-; the sign-in link URL scheme
-; the value can either be http or https
+; The sign-in link URL scheme. The value can be either `http` or
+; `https`.
 scheme = http
 
-; whitelist of all hosts that are allowed in the redirect location
-; after successful authentication
-; if missing or empty any host is allowed
+; Whitelist of all hosts that are allowed in the redirect location after
+; successful authentication. If missing or empty, any host is allowed.
 allowedRedirectHosts = 127.0.0.1:5984, localhost:5984, example.com, example.org
 
-; set to true if providing a username shouln't be optional,
-; but required for every authentication request
+; Set to `true` if providing a username shouln't be optional, but
+; required for every authentication request.
 requireUsername = false
 
-; the time in seconds the authentication token
-; (which is part of the sign-in link) is valid
+; The time (in seconds) that the authentication token (which is part of
+; the sign-in link) is valid.
 tokenExpiryTime = 3600
 
-; the size of the authentication token in bytes
+; The size (in bytes) of the authentication token.
 tokenSize = 16
 
 ; smtp settings
