@@ -45,12 +45,11 @@ test('setup', function(t) {
 
 test('POST /', function(t) {
   var emailBody,
-      expectedToEmail,
+      expectedToEmail = 'foobator42@localhost',
       expectedFromEmail = 'couch_email_auth@example.com',
       expectedSubject = 'Sign In',
       actualFromEmail,
       actualToEmail,
-      actualSubject,
       context = {uri: uri, t: t};
 
   t.test('setup', function(t) {
@@ -58,7 +57,6 @@ test('POST /', function(t) {
       emailBody = '';
       actualFromEmail = connection.from;
       actualToEmail = connection.to[0];
-      actualSubject = connection.subject;
     });
 
     smtp.on("data", function(connection, chunk) {
@@ -99,8 +97,6 @@ test('POST /', function(t) {
 
   [uri, uri + '/foo/bar/baz'].forEach(function(uri) {
     t.test('POST to ' + uri + ' works and an email is sent', function(t) {
-      expectedToEmail = 'foobator42@localhost',
-
       request({
         method: 'POST',
         uri: uri,
@@ -115,6 +111,7 @@ test('POST /', function(t) {
         t.ok(body.ok);
         t.equal(actualFromEmail, expectedFromEmail);
         t.equal(actualToEmail, expectedToEmail);
+        t.ok(emailBody.indexOf('Subject: ' + config.email.subject) !== -1, 'Subject');
         t.ok(emailBody.indexOf('Hi Local Foo Bator') !== -1, 'mailbody');
         t.ok(emailBody.indexOf(uri) !== -1, 'mailbody');
         t.ok(emailBody.indexOf('http:\/\/') !== -1, 'http scheme is used');
