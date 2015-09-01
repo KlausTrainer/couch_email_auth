@@ -42,7 +42,7 @@ curl -H Content-Type:application/json -X POST \
 ### Request parameters
 
 ```
-redirectUrl (required) Redirect to this location after authentication
+redirectUrl (required) Redirect to this URL after authentication
 email       (required) The email address the sign-in link is sent to
 username    (optional) A username
 ```
