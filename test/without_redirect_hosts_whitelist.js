@@ -54,7 +54,7 @@ test('POST /', function(t) {
         uri: uri,
         json: true,
         body: {
-          redirectLocation: 'http://' + host + '/',
+          redirectUrl: 'http://' + host + '/',
           email: "rockoartischocko@example.com"
         }
       }, function(err, response, body) {

@@ -16,7 +16,7 @@ var test = require('tape'),
     testRequest = require('./test_helper').testRequest,
     config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
-    redirectLocation = couchDbBaseUrl + '/',
+    redirectUrl = couchDbBaseUrl + '/',
     db = require('nano')(couchDbBaseUrl + '/' + config.usersDb),
     simplesmtp = require('simplesmtp');
 
@@ -75,24 +75,24 @@ test('POST /', function(t) {
   testRequest(context, 'POST to / fails with empty JSON object', 'POST', '{}',
     400);
 
-  testRequest(context, 'POST to / fails with no redirectLocation property',
+  testRequest(context, 'POST to / fails with no redirectUrl property',
     'POST', '{"email":"test@example.com"}', 400);
 
   testRequest(context, 'POST to / fails with no email property', 'POST',
-    '{"redirectLocation":"http://localhost:5984/","foo":42}', 400);
+    '{"redirectUrl":"http://localhost:5984/","foo":42}', 400);
 
   testRequest(context, 'POST to / fails with wrong email address', 'POST',
-    '{"redirectLocation":"http://localhost:5984/","email":42}', 400);
+    '{"redirectUrl":"http://localhost:5984/","email":42}', 400);
 
   testRequest(context, 'POST to / fails with wrong email address', 'POST',
-    '{"redirectLocation":"http://localhost:5984/","email":"test"}', 400);
+    '{"redirectUrl":"http://localhost:5984/","email":"test"}', 400);
 
-  testRequest(context, 'POST to / fails with invalid redirect location', 'POST',
-    '{"redirectLocation":"foobar","email":"test@example.com"}', 400);
+  testRequest(context, 'POST to / fails with invalid redirect URL', 'POST',
+    '{"redirectUrl":"foobar","email":"test@example.com"}', 400);
 
   testRequest(context,
-    'POST to / works with valid redirect location and email address', 'POST',
-    '{"redirectLocation":"http://localhost:5984/","email":"test@example.com"}',
+    'POST to / works with valid redirect URL and email address', 'POST',
+    '{"redirectUrl":"http://localhost:5984/","email":"test@example.com"}',
      200);
 
   [uri, uri + '/foo/bar/baz'].forEach(function(uri) {
@@ -102,7 +102,7 @@ test('POST /', function(t) {
         uri: uri,
         json: true,
         body: {
-          redirectLocation: redirectLocation,
+          redirectUrl: redirectUrl,
           email: expectedToEmail,
           username: 'Local Foo Bator'
         }
@@ -127,7 +127,7 @@ test('POST /', function(t) {
       uri: uri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: 'foobator@example.com'
       }
     }, function(err, response, body) {
@@ -148,7 +148,7 @@ test('POST /', function(t) {
       uri: uri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: "rockoartischocko@example.com",
         username: "Rocko Artischocko"
       }
@@ -258,7 +258,7 @@ test('GET /', function(t) {
         uri: uri,
         json: true,
         body: {
-          redirectLocation: redirectLocation,
+          redirectUrl: redirectUrl,
           email: email
         }
       }, function(err, response, body) {
@@ -280,7 +280,7 @@ test('GET /', function(t) {
           t.equal(response.statusCode, 302);
           t.ok(body.ok);
           t.ok(body.name, email);
-          t.equal(response.headers['location'], redirectLocation);
+          t.equal(response.headers['location'], redirectUrl);
 
           request({
             method: 'GET',
@@ -306,7 +306,7 @@ test('GET /', function(t) {
       uri: requestUri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: email
       }
     }, function(err, response, body) {
@@ -346,7 +346,7 @@ test('GET /', function(t) {
       uri: requestUri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: email
       }
     }, function(err, response, body) {
@@ -378,7 +378,7 @@ test('GET /', function(t) {
       uri: uri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: email
       }
     };
@@ -521,7 +521,7 @@ test('DELETE /', function(t) {
       uri: uri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: email
       }
     }, function(err, response, body) {

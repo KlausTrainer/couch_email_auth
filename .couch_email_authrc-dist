@@ -7,7 +7,7 @@ usersDb = _users
 ; `https`.
 scheme = http
 
-; Whitelist of all hosts that are allowed in the redirect location after
+; Whitelist of all hosts that are allowed in the redirect URL after
 ; successful authentication. If missing or empty, any host is allowed.
 allowedRedirectHosts = 127.0.0.1:5984, localhost:5984, example.com, example.org
 

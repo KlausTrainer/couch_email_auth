@@ -17,7 +17,7 @@ var test = require('tape'),
     request = require('request'),
     config = require('../lib/config')(),
     couchDbBaseUrl = config.couchDbBaseUrl,
-    redirectLocation = couchDbBaseUrl + '/',
+    redirectUrl = couchDbBaseUrl + '/',
     simplesmtp = require('simplesmtp');
 
 var uri, server, smtp;
@@ -76,7 +76,7 @@ test('POST /', function(t) {
       uri: uri,
       json: true,
       body: {
-        redirectLocation: redirectLocation,
+        redirectUrl: redirectUrl,
         email: expectedToEmail,
         username: 'Local Foo Bator'
       }

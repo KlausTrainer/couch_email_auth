@@ -61,7 +61,7 @@ test('POST /', function(t) {
         uri: uri,
         json: true,
         body: {
-          redirectLocation: 'http://' + host + '/',
+          redirectUrl: 'http://' + host + '/',
           email: "rockoartischocko@example.com"
         }
       }, function(err, response, body) {
@@ -79,12 +79,12 @@ test('POST /', function(t) {
         uri: uri,
         json: true,
         body: {
-          redirectLocation: 'http://' + host + '/',
+          redirectUrl: 'http://' + host + '/',
           email: "rockoartischocko@example.com"
         }
       }, function(err, response, body) {
         t.equal(response.statusCode, 400);
-        t.equal(body.message, 'unallowed redirect location');
+        t.equal(body.message, 'unallowed redirect URL');
         t.end();
       });
     });
