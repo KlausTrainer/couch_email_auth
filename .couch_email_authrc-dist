@@ -11,6 +11,15 @@ scheme = http
 ; successful authentication. If missing or empty, any host is allowed.
 allowedRedirectHosts = 127.0.0.1:5984, localhost:5984, example.com, example.org
 
+; If `addAuthSessionToRedirectUrl` is `true`, the `AuthSession` cookie
+; value will be added as `AuthSession` query parameter to the
+; `redirectUrl` in the response after following the sign-in link. This
+; is for the case that browsers don't accept third-party cookies, and
+; requests to the couch_email_auth endpoint are cross-origin. If
+; `addAuthSessionToRedirectUrl` is `true`, clients can then set the
+; `AuthSession` cookie themselves.
+addAuthSessionToRedirectUrl = false
+
 ; Set to `true` if providing a username shouln't be optional, but
 ; required for every authentication request.
 requireUsername = false

@@ -9,6 +9,9 @@ process.argv = [
   'test/fixtures/integrationtestrc'
 ];
 
+// delete the cache in order to make sure that a new config is getting loaded
+delete require.cache[require.resolve('../lib/server')];
+
 var test = require('tape'),
     s = require('../lib/server'),
     crypto = require('crypto'),
