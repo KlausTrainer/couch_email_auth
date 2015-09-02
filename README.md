@@ -1,8 +1,6 @@
 # couch_email_auth [![Build Status](https://travis-ci.org/KlausTrainer/couch_email_auth.svg?branch=master)](https://travis-ci.org/KlausTrainer/couch_email_auth)
 
-couch_email_auth provides passwordless authentication by sending the authenticating user a sign-in link via email. The sign-in link contains an authentication token, which gets exchanged for a CouchDB authentication cookie the first time a user follows the sign-in link.
-
-Every authentication token can only be used once, and as soon as a new token is used, any existing CouchDB authentication cookie is invalidated. Both the authentication token and the CouchDB authentication cookie have an expiration time, which can be configured independently for each.
+couch_email_auth provides passwordless authentication by sending the authenticating user a sign-in link via email. The sign-in link contains an authentication token, which gets exchanged for a CouchDB authentication cookie the first time a user follows the sign-in link. Every authentication token can only be used once. Both the authentication token and the CouchDB authentication cookie have an expiration time, which can be configured independently for each.
 
 You can run couch_email_auth behind CouchDB by using CouchDB's proxy feature. That means that CouchDB will forward HTTP requests that are sent to a particular endpoint (which is configurable), and couch_email_auth doesn't need to bind to a network interface that is reachable from outside. CouchDB's proxy feature is described in detail in the CouchDB documentation [here](http://docs.couchdb.org/en/latest/config/proxying.html).
 
