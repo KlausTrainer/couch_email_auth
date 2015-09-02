@@ -45,9 +45,9 @@ email       (required) The email address the sign-in link is sent to
 username    (optional) A username
 ```
 
-### Templates
+### Email Template
 
-We are currently providing two template variables:
+For configuring the template file to be used for sign-in emails, see the `template` configuration in the configuration file's `email` section. There are two variables available in the template:
 
 ```
 username        The username
