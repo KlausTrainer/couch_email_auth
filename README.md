@@ -39,17 +39,19 @@ curl -H Content-Type:application/json -X POST \
 
 ### Request parameters
 
-```
-redirectUrl (required) Redirect to this URL after authentication
-email       (required) The email address the sign-in link is sent to
-username    (optional) A username
-```
+| Name          | Description                                   | Required |
+| ------------- | --------------------------------------------- | -------- |
+| `redirectUrl` | redirect to this URL after authentication     | yes      |
+| `email`       | the email address the sign-in link is sent to | yes      |
+| `username`    | a username                                    | no       |
 
 ### Email Template
 
-For configuring the template file to be used for sign-in emails, see the `template` configuration in the configuration file's `email` section. There are two variables available in the template:
+For configuring the template file to be used for sign-in emails, see the `template` configuration in the configuration file's `email` section.
 
-```
-username        The username
-sign_in_link    The sign-in link
-```
+The following variables are available in the template:
+
+| Name           | Description      |
+| -------------- | ---------------- |
+| `username`     | the username     |
+| `sign_in_link` | the sign-in link |
