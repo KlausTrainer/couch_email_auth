@@ -57,3 +57,7 @@ The following variables are available in the template:
 | -------------- | ---------------- |
 | `username`     | the username     |
 | `sign_in_link` | the sign-in link |
+
+## Invalidating All of a User's Authentication Sessions
+
+An authenticated user can invalidate all of their authentication sessions by sending a `DELETE`-request to the couch_email_auth endpoint. An example use case would be that a user is authenticated with multiple devices, but wants to sign-out from all those devices at once. The `DELETE`-request will achieve exactly this.
