@@ -30,14 +30,14 @@ couch_email_auth should now be available via your CouchDB instance at `http://lo
 
 ## Email Sign-In
 
-Send a `POST`-request according to the following example to the couch_email_auth endpoint:
+Send a `POST`-request to the couch_email_auth endpoint according to the following example:
 
 ```sh
 curl -H Content-Type:application/json -X POST \
   http://localhost:5984/_couch_email_auth --data-binary '{"redirectUrl": "http://example.com/app", "email": "andy@example.com", "username": "Andy"}'
 ```
 
-Following the example, an email with a sign-in link should have been sent to `andy@example.com`. When opening the sing-in link in a web browser, the user should be authenticated, and redirected to `http://example.com/app`.
+Following the example, an email with a sign-in link should be sent to `andy@example.com` after a successful request. When opening the sing-in link in a web browser, the user should be authenticated, and redirected to `http://example.com/app`.
 
 ### Request Parameters
 
